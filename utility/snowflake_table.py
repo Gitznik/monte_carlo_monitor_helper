@@ -1,7 +1,7 @@
-from utility_functions_mc_script import query_mc_api
-from  config import mc_queries
+from .utility_functions_mc_script import query_mc_api
+from .config import mc_queries
 
-class snowflake_table:
+class snowflakeTable:
     def __init__(
             self, 
             table_name: str,
