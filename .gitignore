@@ -2,4 +2,4 @@
 env
 *.code-workspace
 __pycache__
-/data
+utility/data

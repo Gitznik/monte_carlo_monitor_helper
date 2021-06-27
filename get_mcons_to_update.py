@@ -5,8 +5,8 @@ from utility.utility_functions_mc_script import query_snowflake
 from utility.utility_functions_mc_script import log_progress
 from utility.utility_functions_mc_script import query_mc_api
 import json
-from config import mc_queries
-from config.read_config import yamlConfig
+from utility.config import mc_queries
+from utility.config.read_config import yamlConfig
 
 
 # %%
@@ -81,5 +81,5 @@ for enum, table in enumerate(tables_without_monitor[:3]):
 
 
 # %%
-with open('tables_with_mcons.json', 'w') as file:
+with open('utility/data/tables_with_mcons.json', 'w') as file:
     json.dump(tables_with_mc_information, file, indent=2)
