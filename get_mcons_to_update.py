@@ -1,9 +1,9 @@
 # To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
-from utility_functions_mc_script import query_snowflake
-from utility_functions_mc_script import log_progress
-from utility_functions_mc_script import query_mc_api
+from utility.utility_functions_mc_script import query_snowflake
+from utility.utility_functions_mc_script import log_progress
+from utility.utility_functions_mc_script import query_mc_api
 import json
 from config import mc_queries
 from config.read_config import yamlConfig
