@@ -5,8 +5,8 @@ from utility_functions_mc_script import query_snowflake
 from utility_functions_mc_script import log_progress
 from utility_functions_mc_script import query_mc_api
 import json
-import mc_queries
-from read_config import yamlConfig
+from config import mc_queries
+from config.read_config import yamlConfig
 
 
 # %%

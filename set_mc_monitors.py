@@ -4,7 +4,7 @@
 import json
 
 from utility_functions_mc_script import log_progress, query_mc_api
-import mc_queries
+from config import mc_queries
 
 monitorable_time_fields = [
     'servertime',

@@ -5,7 +5,7 @@ import pandas as pd
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 import os
-from read_config import yamlConfig
+from config.read_config import yamlConfig
 
 
 
