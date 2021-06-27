@@ -32,7 +32,7 @@ def log_progress(count, total, status=''):
 
 def query_snowflake(
     query,
-    snowflake_pw = os.environ.get('R_USER_PW'),
+    snowflake_pw = os.environ.get('SNOWFLAKE_PW'),
     yaml_config = yamlConfig()):
     """
     Runs the provided query on snowflake. Returns the results as a pandas DataFrame

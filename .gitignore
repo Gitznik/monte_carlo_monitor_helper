@@ -1,1 +1,3 @@
 *_secrets.yaml
+env
+*.code-workspace
