@@ -4,12 +4,12 @@ from .config import mc_queries
 class snowflakeTable:
     def __init__(
             self, 
-            table_name: str,
-            warehouse_id: str) -> None:
+            table_name: str) -> None:
         
         self.table_name = table_name
+
+    def initialize_monte_carlo(self, warehouse_id: str):
         self.warehouse_id = warehouse_id
-        
         self.get_mc_information()
         self.extract_timefields()
 

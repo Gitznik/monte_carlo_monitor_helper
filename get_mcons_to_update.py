@@ -53,7 +53,8 @@ table_to_update_count = len(tables_without_monitor[:3])
 for enum, table_name in enumerate(tables_without_monitor[:3]):
     log_progress(enum, table_to_update_count, status=f'Working on {table}')
 
-    table = snowflakeTable(table_name=table_name, warehouse_id=mc_warehouse_id)
+    table = snowflakeTable(table_name=table_name)
+    table.initialize_monte_carlo(warehouse_id=mc_warehouse_id)
     table_summary = table.save_table()
     tables_with_mc_information[table_name] = table_summary[table_name]
 
