@@ -1,3 +1,5 @@
 *_secrets.yaml
 env
 *.code-workspace
+__pycache__
+utility/data

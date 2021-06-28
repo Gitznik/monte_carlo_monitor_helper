@@ -2,10 +2,11 @@
 import yaml
 import os
 
-class yamlConfig():
+class yamlConfig:
     def __init__(self):
         self.full_config = self.load_config()
         self.full_snowflake_secrets = self.load_secrets()
+        self.extract_table_config()
         self.extract_snowflake_config()
         self.extract_monitor_config()
 
@@ -21,10 +22,16 @@ class yamlConfig():
         with open(filepath) as secrets:
             return(yaml.full_load(secrets))
 
-    def load_table_config(self):
-        table_config = self.full_config['snowflake_config']
+    def extract_table_config(self):
+        table_config = self.full_config['table_config']
         self.table_age_limit = table_config['table_age_limit']
-        self.snowflake_schemas = tuple(table_config['schemas'])
+        schemas = tuple(table_config['schemas'])
+        if len(schemas) == 0:
+            raise ValueError("No schemas provided")
+        elif len(schemas) == 1:
+            self.snowflake_schemas = f"('{schemas[0]}')"
+        else:
+            self.snowflake_schemas = schemas
 
     def extract_snowflake_config(self):
         snowflake_secrets = self.full_snowflake_secrets['snowflake_config']

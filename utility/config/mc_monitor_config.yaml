@@ -2,7 +2,6 @@ table_config:
   table_age_limit: 5
   schemas:
     - L1_CLIENTSDK_EVENT
-    - L2_CLIENTSDK_EVENT
 monitor_config:
   default_timefields:
     - servertime

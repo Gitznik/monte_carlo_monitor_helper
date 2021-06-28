@@ -5,8 +5,9 @@ from utility.utility_functions_mc_script import query_snowflake
 from utility.utility_functions_mc_script import log_progress
 from utility.utility_functions_mc_script import query_mc_api
 import json
-from config import mc_queries
-from config.read_config import yamlConfig
+from utility.config import mc_queries
+from utility.config.read_config import yamlConfig
+from utility.snowflake_table import snowflakeTable
 
 
 # %%
@@ -43,43 +44,21 @@ for table in snowflake_tables:
 
 # %%
 
-
-def extract_timefields(mc_api_response):
-    timefields = {}
-    for node in (mc_api_response['getTable']
-                                ['versions']
-                                ['edges'][0]
-                                ['node']
-                                ['fields']
-                                ['edges']):
-        timefields[node['node']['name']] = node['node']['fieldType']
-    return timefields
-
-
 mc_warehouse_id = (query_mc_api(mc_queries.query_get_warehouse_id)
                    ['getUser']['account']['warehouses'][0]['uuid'])
 
 tables_with_mc_information = {}
 table_to_update_count = len(tables_without_monitor[:3])
 
-for enum, table in enumerate(tables_without_monitor[:3]):
+for enum, table_name in enumerate(tables_without_monitor[:3]):
     log_progress(enum, table_to_update_count, status=f'Working on {table}')
 
-    query_params_table_information = {
-        "fullTableId": table,
-        "dwId": mc_warehouse_id,
-        "isTimeField": True}
-    mc_table_information_api_response = query_mc_api(
-        mc_queries.query_get_mcons_for_tables,
-        query_params=query_params_table_information)
-
-    tables_with_mc_information[table] = {}
-    tables_with_mc_information[table]['mcon'] = \
-        mc_table_information_api_response['getTable']['mcon']
-    tables_with_mc_information[table]['time_fields'] = \
-        extract_timefields(mc_table_information_api_response)
+    table = snowflakeTable(table_name=table_name)
+    table.initialize_monte_carlo(warehouse_id=mc_warehouse_id)
+    table_summary = table.save_table()
+    tables_with_mc_information[table_name] = table_summary[table_name]
 
 
 # %%
-with open('tables_with_mcons.json', 'w') as file:
+with open('utility/data/tables_with_mcons.json', 'w') as file:
     json.dump(tables_with_mc_information, file, indent=2)
