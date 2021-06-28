@@ -1,4 +1,4 @@
-from .utility_functions_mc_script import query_mc_api
+from .utility_functions import query_mc_api
 from .config import mc_queries
 from .config.read_config import yamlConfig
 

@@ -3,7 +3,7 @@
 # %%
 import json
 
-from utility.utility_functions_mc_script import log_progress
+from utility.utility_functions import log_progress
 from utility.snowflake_table import snowflakeTable
 
 # %%
