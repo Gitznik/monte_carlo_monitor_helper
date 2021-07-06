@@ -6,7 +6,7 @@ from utility.utility_functions import query_mc_api
 import json
 from utility.config import mc_queries
 from utility.config.read_config import yamlConfig
-from utility.snowflake_table import snowflakeTable
+from utility.monte_carlo_table import monteCarloTable
 from utility.database_connection import snowflakeConnection
 
 
@@ -45,7 +45,7 @@ table_to_update_count = len(tables_without_monitor[:3])
 for enum, table_name in enumerate(tables_without_monitor[:3]):
     log_progress(enum, table_to_update_count, status=f'Working on {table_name}')
 
-    table = snowflakeTable(table_name=table_name)
+    table = monteCarloTable(table_name=table_name)
     table.initialize_monte_carlo(warehouse_id=mc_warehouse_id)
     table_summary = table.save_table()
     tables_with_mc_information[table_name] = table_summary[table_name]

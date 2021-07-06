@@ -5,7 +5,7 @@ from .config.read_config import yamlConfig
 
 yaml_config = yamlConfig()
 
-class snowflakeTable:
+class monteCarloTable:
     def __init__(
             self, 
             table_name: str,
@@ -37,24 +37,22 @@ class snowflakeTable:
         self.mcon = mc_table_information_api_response['getTable']['mcon']
 
     def extract_timefields(self) -> None:
-        timefield_information = {}
-        for node in (self.mc_table_information['getTable']
-                                              ['versions']
-                                              ['edges'][0]
-                                              ['node']
-                                              ['fields']
-                                              ['edges']):
-            timefield_information[node['node']['name']] = node['node']['fieldType']
+        timefield_information = {
+            node['node']['name']: node['node']['fieldType']
+            for node in self.mc_table_information['getTable']['versions']['edges'][
+                0
+            ]['node']['fields']['edges']
+        }
+
         self.timefield_information = timefield_information
 
     def save_table(self) -> dict:
-        summary_dict = {
+        return {
             self.table_name: {
                 'mcon': (self.mcon),
                 'time_fields':self.timefield_information
                 }
             }
-        return summary_dict
 
     def find_timefield_to_monitor(
             self, 

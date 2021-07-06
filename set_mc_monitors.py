@@ -4,7 +4,7 @@
 import json
 
 from utility.utility_functions import log_progress
-from utility.snowflake_table import snowflakeTable
+from utility.monte_carlo_table import monteCarloTable
 
 # %%
 with open('utility/data/tables_with_mcons.json') as file:
@@ -16,7 +16,7 @@ monitors_to_set_count = len(mcons_to_set)
 for enum, table_name in enumerate(mcons_to_set):
     log_progress(enum, monitors_to_set_count, status=f'Working on {table_name}')
 
-    table = snowflakeTable(table_name= table_name)
+    table = monteCarloTable(table_name= table_name)
     table.initialize_saved_state(saved_state= mcons_to_set[table_name])
 
     if table_to_monitor_manually := table.set_monitor(
