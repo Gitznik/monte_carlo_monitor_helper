@@ -1,32 +1,24 @@
 # To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
-from utility.utility_functions import query_snowflake
 from utility.utility_functions import log_progress
 from utility.utility_functions import query_mc_api
 import json
 from utility.config import mc_queries
 from utility.config.read_config import yamlConfig
 from utility.snowflake_table import snowflakeTable
+from utility.database_connection import snowflakeConnection
 
 
-# %%
+# Create main() that just has the main functionality and move e.g. the snowflake queries to a different file
+
+# %% Rename everything snowflake with purpose and remove snowflake
 yaml_config = yamlConfig()
 
-query_get_snowflake_tables = f'''
-    SELECT
-        TABLE_CATALOG || ':' || TABLE_SCHEMA || '.' || TABLE_NAME
-            AS TABLE_REF
-    FROM  { yaml_config.snowflake_db }.INFORMATION_SCHEMA.TABLES
-    WHERE TABLE_CATALOG = '{ yaml_config.snowflake_db }' 
-        AND TABLE_SCHEMA IN { yaml_config.snowflake_schemas }
-        AND LAST_ALTERED >= CURRENT_DATE - { yaml_config.table_age_limit }
-'''
-snowflake_tables = query_snowflake(query_get_snowflake_tables)\
-    .table_ref.unique()
-snowflake_tables = [table.lower() for table in snowflake_tables]
+database_connection = snowflakeConnection(yaml_config=yaml_config)
+database_tables = database_connection.get_tables_in_schema()
 
-# %%
+# %% Writing it as functions or as a class
 
 existing_monitors_response = query_mc_api(
     mc_queries.query_get_existing_monitors,
@@ -38,7 +30,7 @@ for edge in existing_monitors_response['getAllUserDefinedMonitorsV2']['edges']:
 
 # %%
 tables_without_monitor = []
-for table in snowflake_tables:
+for table in database_tables:
     if table not in existing_monitors:
         tables_without_monitor.append(table)
 
@@ -51,7 +43,7 @@ tables_with_mc_information = {}
 table_to_update_count = len(tables_without_monitor[:3])
 
 for enum, table_name in enumerate(tables_without_monitor[:3]):
-    log_progress(enum, table_to_update_count, status=f'Working on {table}')
+    log_progress(enum, table_to_update_count, status=f'Working on {table_name}')
 
     table = snowflakeTable(table_name=table_name)
     table.initialize_monte_carlo(warehouse_id=mc_warehouse_id)
