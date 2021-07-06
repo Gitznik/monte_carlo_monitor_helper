@@ -29,33 +29,6 @@ def log_progress(count, total, status=''):
     sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
     sys.stdout.flush()
 
-
-def query_snowflake(
-    query,
-    snowflake_pw = os.environ.get('SNOWFLAKE_PW'),
-    yaml_config = yamlConfig()):
-    """
-    Runs the provided query on snowflake. Returns the results as a pandas DataFrame
-
-    :param query: Query to run on snowflake
-    :param snowflake_pw: Snowflake of the user
-    :param yaml_config: Class containing the yaml config 
-    :return: Dataframe with results of given query
-
-    """
-
-    engine = create_engine(URL(
-        account = yaml_config.snowflake_account,
-        user = yaml_config.snowflake_user,
-        password = snowflake_pw,
-        database = yaml_config.snowflake_db,
-        warehouse = yaml_config.snowflake_wh,
-        role = yaml_config.snowflake_role
-    ))
-
-    return pd.read_sql(query, engine.connect())
-
-
 def query_mc_api(
     query_string, 
     x_mcd_id=os.environ.get('X_MCD_ID'), 

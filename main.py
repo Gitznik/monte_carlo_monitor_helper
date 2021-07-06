@@ -1,0 +1,71 @@
+# To add a new cell, type '# %%'
+# To add a new markdown cell, type '# %% [markdown]'
+# %%
+from utility.utility_functions import log_progress
+import json
+from utility.config.read_config import yamlConfig
+from utility.monte_carlo_table import monteCarloTable
+from utility.database_connection import snowflakeConnection
+from utility.monte_carlo_state import monteCarloState
+from datetime import datetime
+
+def main():
+    # %% 
+    yaml_config = yamlConfig()
+
+    database_connection = snowflakeConnection(yaml_config=yaml_config)
+    database_tables = database_connection.get_tables_in_schema()
+
+    # %% 
+
+    monte_carlo_state = monteCarloState()
+    tables_without_monitor = monte_carlo_state.find_tables_without_monitor(
+        database_tables=database_tables)
+
+    # %%
+
+    tables_to_monitor = {}
+    tables_to_monitor_manually = {}
+    table_to_update_count = len(tables_without_monitor[:3])
+
+    print('Getting monte carlo data for tables without monitors')
+    for enum, table_name in enumerate(tables_without_monitor[:1]):
+        log_progress(enum, table_to_update_count, status=f'Working on {table_name}')
+
+        table = monteCarloTable(table_name=table_name)
+        table.initialize_monte_carlo(warehouse_id=monte_carlo_state.warehouse_id)
+        table.evaluate_is_monitorable(monitor_without_timefield=False)
+        if table.monitorable:
+            table_summary = table.save_table()
+            tables_to_monitor[table_name] = table_summary
+        else:
+            tables_to_monitor_manually[table_name] = table.monitor_error
+
+    # %%
+    execution_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    with open(f'utility/data/{execution_time}_tables_to_monitor.json', 'w') as file:
+        json.dump(tables_to_monitor, file, indent=2)
+
+    with open(f'utility/data/{execution_time}_tables_to_monitor_manually.json', 'w') as file:
+        json.dump(tables_to_monitor_manually, file, indent=2)
+
+    # %%
+    tables_to_monitor_count = len(tables_to_monitor)
+    if tables_to_monitor_count > 0:
+        print('Setting monte carlo monitors')
+        for enum, table_name in enumerate(tables_to_monitor):
+            log_progress(
+                enum, 
+                tables_to_monitor_count, 
+                status=f'Working on {table_name}')
+
+            table = monteCarloTable(table_name= table_name)
+            table.initialize_saved_state(
+                saved_state= tables_to_monitor[table_name])
+            table.set_monitor()
+    else:
+        print('No monitors to set')
+
+
+if __name__ == '__main__':
+    main()

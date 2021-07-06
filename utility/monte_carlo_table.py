@@ -18,12 +18,13 @@ class monteCarloTable:
         self.warehouse_id = warehouse_id
         self.get_mc_information()
         self.extract_timefields()
-
-    def initialize_saved_state(self, saved_state: dict):
-        self.timefield_information = saved_state['time_fields']
-        self.mcon = saved_state['mcon']
         self.find_timefield_to_monitor(
             monitorable_time_fields= yaml_config.default_timefields)
+
+    def initialize_saved_state(self, saved_state: dict):
+        self.timefield_to_monitor_dict = saved_state['time_fields']
+        self.mcon = saved_state['mcon']
+        self.monitorable = saved_state['monitorable']
 
     def get_mc_information(self) -> None:
         query_params_table_information = {
@@ -46,14 +47,6 @@ class monteCarloTable:
 
         self.timefield_information = timefield_information
 
-    def save_table(self) -> dict:
-        return {
-            self.table_name: {
-                'mcon': (self.mcon),
-                'time_fields':self.timefield_information
-                }
-            }
-
     def find_timefield_to_monitor(
             self, 
             monitorable_time_fields: list
@@ -74,10 +67,28 @@ class monteCarloTable:
             'timefield_to_monitor': timefield_to_monitor,
             'time_axis_type': time_axis_type}
 
-    def set_monitor(
-        self, 
-        monitor_without_timefield: bool = False
-        ):
+    def evaluate_is_monitorable(
+            self,
+            monitor_without_timefield:bool = False
+            ) -> None:
+
+        self.monitorable = False
+        if self.available_timefield_count == 0 and not monitor_without_timefield:
+            self.monitor_error = 'No timefield available'
+        elif (self.available_timefield_count > 0 and 
+                self.timefield_to_monitor_dict['timefield_to_monitor'] is None):
+            self.monitor_error = 'No matching standard timefield found'
+        else:
+            self.monitorable = True
+
+    def save_table(self) -> dict:
+        return {
+            'mcon': self.mcon,
+            'time_fields': self.timefield_to_monitor_dict,
+            'monitorable': self.monitorable
+            }
+
+    def set_monitor(self):
 
         set_monitor_query_params = {
             "mcon": None,
@@ -91,15 +102,15 @@ class monteCarloTable:
             }
         }
 
-        if (self.available_timefield_count == 0 and 
-            monitor_without_timefield is False) or \
-            (self.available_timefield_count > 0 and 
-            self.timefield_to_monitor_dict['timefield_to_monitor'] is None):
-            return self.table_name
+        try:
+            if self.monitorable == False:
+                raise ValueError('Table is not automatically monitorable.')
+        except:
+            raise ValueError('Not known if this table is monitorable. Please make sure to evaluate this before trying to set a monitor')
 
         set_monitor_query_params["mcon"] = self.mcon
-        set_monitor_query_params["timeAxisName"] = self.timefield_to_monitor_dict["timefield_to_monitor"]
-        set_monitor_query_params["timeAxisType"] = self.timefield_to_monitor_dict["time_axis_type"]
+        set_monitor_query_params["timeAxisName"] = self.timefield_to_monitor_dict.get("timefield_to_monitor")
+        set_monitor_query_params["timeAxisType"] = self.timefield_to_monitor_dict.get("time_axis_type")
 
         query_mc_api(
             query_string = mc_queries.query_create_monitor,
