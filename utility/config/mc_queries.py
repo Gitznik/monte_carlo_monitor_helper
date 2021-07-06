@@ -1,6 +1,3 @@
-if __name__ == '__main__':
-    pass
-
 query_get_warehouse_id = """
     query getUser {
     getUser {

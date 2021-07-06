@@ -1,16 +1,8 @@
 import sys
-from sqlalchemy import create_engine
-from snowflake.sqlalchemy import URL
-import pandas as pd
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 import os
-from .config.read_config import yamlConfig
 
-
-
-if __name__ == '__main__':
-    pass
 
 def log_progress(count, total, status=''):
     '''
@@ -28,33 +20,6 @@ def log_progress(count, total, status=''):
 
     sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
     sys.stdout.flush()
-
-
-def query_snowflake(
-    query,
-    snowflake_pw = os.environ.get('SNOWFLAKE_PW'),
-    yaml_config = yamlConfig()):
-    """
-    Runs the provided query on snowflake. Returns the results as a pandas DataFrame
-
-    :param query: Query to run on snowflake
-    :param snowflake_pw: Snowflake of the user
-    :param yaml_config: Class containing the yaml config 
-    :return: Dataframe with results of given query
-
-    """
-
-    engine = create_engine(URL(
-        account = yaml_config.snowflake_account,
-        user = yaml_config.snowflake_user,
-        password = snowflake_pw,
-        database = yaml_config.snowflake_db,
-        warehouse = yaml_config.snowflake_wh,
-        role = yaml_config.snowflake_role
-    ))
-
-    return pd.read_sql(query, engine.connect())
-
 
 def query_mc_api(
     query_string, 
@@ -75,7 +40,7 @@ def query_mc_api(
     :return: Response of the API
     :rtype: dict
     """  
-    if (x_mcd_id == None or x_mcd_token == None):
+    if x_mcd_id is None or x_mcd_token is None:
         raise ValueError("MC API access keys not setup correctly")
 
     transport = RequestsHTTPTransport(
@@ -85,7 +50,6 @@ def query_mc_api(
             'x-mcd-token': x_mcd_token})
     query = gql(query_string)
     client = Client(transport=transport, fetch_schema_from_transport=True)
-    result = client.execute(query, variable_values=query_params)
-    return result
+    return client.execute(query, variable_values=query_params)
 
   
