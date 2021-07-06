@@ -44,5 +44,3 @@ class yamlConfig:
     def extract_monitor_config(self):
         monitor_config = self.full_config['monitor_config']
         self.default_timefields = monitor_config['default_timefields']
-
-# %%

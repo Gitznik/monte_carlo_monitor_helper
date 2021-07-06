@@ -2,7 +2,6 @@ from .utility_functions import query_mc_api
 from .config import mc_queries
 
 
-
 class monteCarloState:
     def __init__(self) -> None:
         self.get_warehouse_id()

@@ -1,16 +1,8 @@
 import sys
-from sqlalchemy import create_engine
-from snowflake.sqlalchemy import URL
-import pandas as pd
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 import os
-from .config.read_config import yamlConfig
 
-
-
-if __name__ == '__main__':
-    pass
 
 def log_progress(count, total, status=''):
     '''
@@ -48,7 +40,7 @@ def query_mc_api(
     :return: Response of the API
     :rtype: dict
     """  
-    if (x_mcd_id == None or x_mcd_token == None):
+    if x_mcd_id is None or x_mcd_token is None:
         raise ValueError("MC API access keys not setup correctly")
 
     transport = RequestsHTTPTransport(
@@ -58,7 +50,6 @@ def query_mc_api(
             'x-mcd-token': x_mcd_token})
     query = gql(query_string)
     client = Client(transport=transport, fetch_schema_from_transport=True)
-    result = client.execute(query, variable_values=query_params)
-    return result
+    return client.execute(query, variable_values=query_params)
 
   
