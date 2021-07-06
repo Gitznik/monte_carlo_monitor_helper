@@ -1,0 +1,10 @@
+{
+  "kg_dwh:l1_clientsdk_event.clientsdk_dlctechnicalhealthevent": {
+    "mcon": "MCON++0ef9b525-0a3f-4674-973d-27345bdb8b9b++b82cda0b-a0e1-4027-a17a-4b82b0de1dee++table++kg_dwh:l1_clientsdk_event.clientsdk_dlctechnicalhealthevent",
+    "time_fields": {
+      "timefield_to_monitor": "servertime",
+      "time_axis_type": "timestamp_ntz(9)"
+    },
+    "monitorable": true
+  }
+}
