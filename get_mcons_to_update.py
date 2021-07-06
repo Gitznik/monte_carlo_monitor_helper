@@ -2,9 +2,7 @@
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
 from utility.utility_functions import log_progress
-from utility.utility_functions import query_mc_api
 import json
-from utility.config import mc_queries
 from utility.config.read_config import yamlConfig
 from utility.monte_carlo_table import monteCarloTable
 from utility.database_connection import snowflakeConnection
