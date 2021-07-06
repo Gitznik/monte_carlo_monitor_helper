@@ -36,16 +36,6 @@ class snowflakeConnection(databaseConnection):
             ''' 
 
     def query_database(self) -> None:
-        """
-        Runs the provided query on snowflake. Returns the results as a pandas DataFrame
-
-        :param query: Query to run on snowflake
-        :param snowflake_pw: Snowflake of the user
-        :param yaml_config: Class containing the yaml config 
-        :return: Dataframe with results of given query
-
-        """
-
         engine = create_engine(URL(
             account = self.yaml_config.snowflake_account,
             user = self.yaml_config.snowflake_user,

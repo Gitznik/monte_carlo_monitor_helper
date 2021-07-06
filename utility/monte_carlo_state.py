@@ -34,3 +34,4 @@ class monteCarloState:
             table for table in database_tables 
             if table not in self.existing_monitors
         ]
+        
