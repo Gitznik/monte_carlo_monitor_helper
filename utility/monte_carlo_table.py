@@ -91,7 +91,7 @@ class monteCarloTable:
             }
         }
 
-        if (self.available_timefield_count is 0 and 
+        if (self.available_timefield_count == 0 and 
             monitor_without_timefield is False) or \
             (self.available_timefield_count > 0 and 
             self.timefield_to_monitor_dict['timefield_to_monitor'] is None):
