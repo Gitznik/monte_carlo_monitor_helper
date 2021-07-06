@@ -38,4 +38,8 @@ To run this project, you will need to add the following environment variables to
 
 `X_MCD_TOKEN` for the monte carlo API
 
-  
+## Usage
+
+```bash
+python3 main.py
+```
