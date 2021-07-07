@@ -2,6 +2,7 @@ import sys
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 import os
+from .errors import environmentError
 
 
 def log_progress(count, total, status=''):
@@ -41,7 +42,7 @@ def query_mc_api(
     :rtype: dict
     """  
     if x_mcd_id is None or x_mcd_token is None:
-        raise ValueError("MC API access keys not setup correctly")
+        raise environmentError(variable='Monte Carlo API keys')
 
     transport = RequestsHTTPTransport(
         url='https://api.getmontecarlo.com/graphql', 

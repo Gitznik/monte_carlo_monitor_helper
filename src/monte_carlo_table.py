@@ -1,6 +1,7 @@
 from .utility_functions import query_mc_api
 from .config import mc_queries
 from .config.read_config import yamlConfig
+from .errors import monitoringError
 
 
 yaml_config = yamlConfig()
@@ -14,14 +15,14 @@ class monteCarloTable:
         self.table_name = table_name
         self.warehouse_id =  warehouse_id
 
-    def initialize_monte_carlo(self, warehouse_id: str):
+    def initialize_monte_carlo(self, warehouse_id: str) -> None:
         self.warehouse_id = warehouse_id
         self.get_mc_information()
         self.extract_timefields()
         self.find_timefield_to_monitor(
             monitorable_time_fields= yaml_config.default_timefields)
 
-    def initialize_saved_state(self, saved_state: dict):
+    def initialize_saved_state(self, saved_state: dict) -> None:
         self.timefield_to_monitor_dict = saved_state['time_fields']
         self.mcon = saved_state['mcon']
         self.monitorable = saved_state['monitorable']
@@ -40,9 +41,9 @@ class monteCarloTable:
     def extract_timefields(self) -> None:
         timefield_information = {
             node['node']['name']: node['node']['fieldType']
-            for node in self.mc_table_information['getTable']['versions']['edges'][
-                0
-            ]['node']['fields']['edges']
+            for node in self.mc_table_information['getTable']['versions'][
+                'edges'
+                ][0]['node']['fields']['edges']
         }
 
         self.timefield_information = timefield_information
@@ -88,7 +89,7 @@ class monteCarloTable:
             'monitorable': self.monitorable
             }
 
-    def set_monitor(self):
+    def set_monitor(self) -> None:
 
         set_monitor_query_params = {
             "mcon": None,
@@ -104,13 +105,21 @@ class monteCarloTable:
 
         try:
             if self.monitorable == False:
-                raise ValueError('Table is not automatically monitorable.')
+                raise monitoringError(
+                    table_name=self.table_name, 
+                    message='Table is not automatically monitorable.')
         except:
-            raise ValueError('Not known if this table is monitorable. Please make sure to evaluate this before trying to set a monitor')
+            raise monitoringError(
+                table_name=self.table_name, 
+                message='Not known if this table is monitorable. \
+                    Please make sure to evaluate this before trying to set \
+                    a monitor')
 
         set_monitor_query_params["mcon"] = self.mcon
-        set_monitor_query_params["timeAxisName"] = self.timefield_to_monitor_dict.get("timefield_to_monitor")
-        set_monitor_query_params["timeAxisType"] = self.timefield_to_monitor_dict.get("time_axis_type")
+        set_monitor_query_params["timeAxisName"] = \
+            self.timefield_to_monitor_dict.get("timefield_to_monitor")
+        set_monitor_query_params["timeAxisType"] = \
+            self.timefield_to_monitor_dict.get("time_axis_type")
 
         query_mc_api(
             query_string = mc_queries.query_create_monitor,
