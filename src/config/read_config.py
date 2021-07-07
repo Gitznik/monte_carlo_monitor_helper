@@ -1,5 +1,6 @@
 import yaml
 import os
+from ..errors import configError
 
 class yamlConfig:
     def __init__(self):
@@ -26,7 +27,9 @@ class yamlConfig:
         self.table_age_limit = table_config['table_age_limit']
         schemas = tuple(table_config['schemas'])
         if not schemas:
-            raise ValueError("No schemas provided")
+            raise configError(
+                config_part='Schemas', 
+                message="Not provided")
         elif len(schemas) == 1:
             self.snowflake_schemas = f"('{schemas[0]}')"
         else:
