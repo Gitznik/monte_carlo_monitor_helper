@@ -27,11 +27,13 @@ class monteCarloState:
 
     def find_tables_without_monitor(
             self,
-            database_tables:list) -> list:
+            database_tables:list,
+            table_blacklist:list) -> list:
         print('Finding tables without a monitor')
 
         return [
             table for table in database_tables 
             if table not in self.existing_monitors
+                and table not in table_blacklist
         ]
         

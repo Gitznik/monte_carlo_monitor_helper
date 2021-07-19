@@ -26,6 +26,7 @@ class yamlConfig:
         table_config = self.full_config['table_config']
         self.table_age_limit = table_config['table_age_limit']
         schemas = tuple(table_config['schemas'])
+        self.table_blacklist = table_config.get('table_blacklist')
         if not schemas:
             raise configError(
                 config_part='Schemas', 
@@ -37,10 +38,7 @@ class yamlConfig:
 
     def extract_database_config(self):
         database_secrets = self.full_database_secrets['database_config']
-        self.snowflake_account = database_secrets['account']
         self.snowflake_db = database_secrets['database']
-        self.snowflake_user = database_secrets['user_name']
-        self.snowflake_wh = database_secrets['warehouse']
         self.snowflake_role = database_secrets['role']
     
     def extract_monitor_config(self):
