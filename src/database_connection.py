@@ -37,11 +37,11 @@ class snowflakeConnection(databaseConnection):
 
     def query_database(self) -> None:
         engine = create_engine(URL(
-            account = self.yaml_config.snowflake_account,
-            user = self.yaml_config.snowflake_user,
+            account = os.environ.get('SNOWFLAKE_ACCOUNT'),
+            user = os.environ.get('SNOWFLAKE_USER'),
             password = self.snowflake_pw,
             database = self.yaml_config.snowflake_db,
-            warehouse = self.yaml_config.snowflake_wh,
+            warehouse = os.environ.get('SNOWFLAKE_WAREHOUSE'),
             role = self.yaml_config.snowflake_role
         ))
 
